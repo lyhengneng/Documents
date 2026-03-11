@@ -1,0 +1,518 @@
+{
+	"info": {
+		"_postman_id": "openim-websocket-test-collection",
+		"name": "OpenIM WebSocket Tests",
+		"description": "Complete WebSocket test collection for OpenIM Server msggateway",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Connection Tests",
+			"item": [
+				{
+					"name": "Basic Connection",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "ws://localhost:10001/?token={{token}}&sendID={{user_id}}&platformID=1&operationID=conn_{{$timestamp}}",
+							"protocol": "ws",
+							"host": ["localhost"],
+							"port": "10001",
+							"query": [
+								{
+									"key": "token",
+									"value": "{{token}}"
+								},
+								{
+									"key": "sendID",
+									"value": "{{user_id}}"
+								},
+								{
+									"key": "platformID",
+									"value": "1"
+								},
+								{
+									"key": "operationID",
+									"value": "conn_{{$timestamp}}"
+								}
+							]
+						},
+						"description": "Test basic WebSocket connection"
+					},
+					"_postman_pre_request_script": "console.log('Connecting to WebSocket...');\nconsole.log('User ID:', pm.environment.get('user_id'));\nconsole.log('Token:', pm.environment.get('token'));"
+				}
+			]
+		},
+		{
+			"name": "Message Tests",
+			"item": [
+				{
+					"name": "Send Hello Message",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "ws://localhost:10001/?token={{token}}&sendID={{user_id}}&platformID=1&operationID=msg_{{$timestamp}}",
+							"protocol": "ws",
+							"host": ["localhost"],
+							"port": "10001",
+							"query": [
+								{
+									"key": "token",
+									"value": "{{token}}"
+								},
+								{
+									"key": "sendID",
+									"value": "{{user_id}}"
+								},
+								{
+									"key": "platformID",
+									"value": "1"
+								},
+								{
+									"key": "operationID",
+									"value": "msg_{{$timestamp}}"
+								}
+							]
+						},
+						"description": "Send a simple Hello World message",
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"reqIdentifier\": 1003,\n\t\"sendID\": \"{{user_id}}\",\n\t\"operationID\": \"op_{{$timestamp}}\",\n\t\"msgIncr\": \"msg_{{$randomInt}}\",\n\t\"data\": \"SGVsbG8gV29ybGQh\"\n}"
+						},
+						"_postman_pre_request_script": "console.log('Sending Hello message...');",
+						"_postman_test_script": "// Parse response\ntry {\n    const response = JSON.parse(pm.response.text());\n    \n    // Validate response\n    pm.test(\"Response has no errors\", function() {\n        pm.expect(response.errCode).to.eql(0);\n    });\n    \n    pm.test(\"Request identifier matches\", function() {\n        pm.expect(response.reqIdentifier).to.eql(1003);\n    });\n    \n    pm.test(\"Response contains data\", function() {\n        pm.expect(response.data).to.exist;\n    });\n    \n    console.log('Response:', response);\n} catch (e) {\n    console.log('Error parsing response:', e);\n}"
+					}
+				},
+				{
+					"name": "Get Sequence Numbers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "ws://localhost:10001/?token={{token}}&sendID={{user_id}}&platformID=1&operationID=seq_{{$timestamp}}",
+							"protocol": "ws",
+							"host": ["localhost"],
+							"port": "10001",
+							"query": [
+								{
+									"key": "token",
+									"value": "{{token}}"
+								},
+								{
+									"key": "sendID",
+									"value": "{{user_id}}"
+								},
+								{
+									"key": "platformID",
+									"value": "1"
+								},
+								{
+									"key": "operationID",
+									"value": "seq_{{$timestamp}}"
+								}
+							]
+						},
+						"description": "Get latest message sequence numbers",
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"reqIdentifier\": 1001,\n\t\"sendID\": \"{{user_id}}\",\n\t\"operationID\": \"op_{{$timestamp}}\",\n\t\"msgIncr\": \"seq_{{$randomInt}}\",\n\t\"data\": \"e30=\"\n}"
+						},
+						"_postman_pre_request_script": "console.log('Getting sequence numbers...');",
+						"_postman_test_script": "try {\n    const response = JSON.parse(pm.response.text());\n    \n    pm.test(\"Response has no errors\", function() {\n        pm.expect(response.errCode).to.eql(0);\n    });\n    \n    pm.test(\"Request identifier is 1001\", function() {\n        pm.expect(response.reqIdentifier).to.eql(1001);\n    });\n    \n    console.log('Sequence response:', response);\n} catch (e) {\n    console.log('Error:', e);\n}"
+					}
+				},
+				{
+					"name": "Pull Messages by Sequence",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "ws://localhost:10001/?token={{token}}&sendID={{user_id}}&platformID=1&operationID=pull_{{$timestamp}}",
+							"protocol": "ws",
+							"host": ["localhost"],
+							"port": "10001",
+							"query": [
+								{
+									"key": "token",
+									"value": "{{token}}"
+								},
+								{
+									"key": "sendID",
+									"value": "{{user_id}}"
+								},
+								{
+									"key": "platformID",
+									"value": "1"
+								},
+								{
+									"key": "operationID",
+									"value": "pull_{{$timestamp}}"
+								}
+							]
+						},
+						"description": "Pull messages by sequence list",
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"reqIdentifier\": 1002,\n\t\"sendID\": \"{{user_id}}\",\n\t\"operationID\": \"op_{{$timestamp}}\",\n\t\"msgIncr\": \"pull_{{$randomInt}}\",\n\t\"data\": \"eyJzZXExIjogMSwgInNlcTIiOiAyLCAic2VxMyI6IDN9\"\n}"
+						},
+						"_postman_pre_request_script": "console.log('Pulling messages by sequence...');",
+						"_postman_test_script": "try {\n    const response = JSON.parse(pm.response.text());\n    \n    pm.test(\"Response has no errors\", function() {\n        pm.expect(response.errCode).to.eql(0);\n    });\n    \n    pm.test(\"Request identifier is 1002\", function() {\n        pm.expect(response.reqIdentifier).to.eql(1002);\n    });\n    \n    console.log('Pull response:', response);\n} catch (e) {\n    console.log('Error:', e);\n}"
+					}
+				},
+				{
+					"name": "User Logout",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "ws://localhost:10001/?token={{token}}&sendID={{user_id}}&platformID=1&operationID=logout_{{$timestamp}}",
+							"protocol": "ws",
+							"host": ["localhost"],
+							"port": "10001",
+							"query": [
+								{
+									"key": "token",
+									"value": "{{token}}"
+								},
+								{
+									"key": "sendID",
+									"value": "{{user_id}}"
+								},
+								{
+									"key": "platformID",
+									"value": "1"
+								},
+								{
+									"key": "operationID",
+									"value": "logout_{{$timestamp}}"
+								}
+							]
+						},
+						"description": "Logout user from WebSocket",
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"reqIdentifier\": 2003,\n\t\"sendID\": \"{{user_id}}\",\n\t\"operationID\": \"op_{{$timestamp}}\",\n\t\"msgIncr\": \"logout_{{$randomInt}}\",\n\t\"data\": \"e30=\"\n}"
+						},
+						"_postman_pre_request_script": "console.log('Logging out user...');",
+						"_postman_test_script": "try {\n    const response = JSON.parse(pm.response.text());\n    \n    pm.test(\"Response has no errors\", function() {\n        pm.expect(response.errCode).to.eql(0);\n    });\n    \n    console.log('Logout response:', response);\n} catch (e) {\n    console.log('Error:', e);\n}"
+					}
+				}
+			]
+		},
+		{
+			"name": "Compression Tests",
+			"item": [
+				{
+					"name": "Connection with Compression",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "ws://localhost:10001/?token={{token}}&sendID={{user_id}}&platformID=1&operationID=comp_{{$timestamp}}&compression=gzip",
+							"protocol": "ws",
+							"host": ["localhost"],
+							"port": "10001",
+							"query": [
+								{
+									"key": "token",
+									"value": "{{token}}"
+								},
+								{
+									"key": "sendID",
+									"value": "{{user_id}}"
+								},
+								{
+									"key": "platformID",
+									"value": "1"
+								},
+								{
+									"key": "operationID",
+									"value": "comp_{{$timestamp}}"
+								},
+								{
+									"key": "compression",
+									"value": "gzip"
+								}
+							]
+						},
+						"description": "Test WebSocket connection with Gzip compression enabled"
+					}
+				},
+				{
+					"name": "Send Large Message with Compression",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "ws://localhost:10001/?token={{token}}&sendID={{user_id}}&platformID=1&operationID=large_msg_{{$timestamp}}&compression=gzip",
+							"protocol": "ws",
+							"host": ["localhost"],
+							"port": "10001",
+							"query": [
+								{
+									"key": "token",
+									"value": "{{token}}"
+								},
+								{
+									"key": "sendID",
+									"value": "{{user_id}}"
+								},
+								{
+									"key": "platformID",
+									"value": "1"
+								},
+								{
+									"key": "operationID",
+									"value": "large_msg_{{$timestamp}}"
+								},
+								{
+									"key": "compression",
+									"value": "gzip"
+								}
+							]
+						},
+						"description": "Send a large message (>10KB) with compression",
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"reqIdentifier\": 1003,\n\t\"sendID\": \"{{user_id}}\",\n\t\"operationID\": \"op_{{$timestamp}}\",\n\t\"msgIncr\": \"large_{{$randomInt}}\",\n\t\"data\": \"SGVsbG8gV29ybGQhIFRoaXMgaXMgYSBsYXJnZSBtZXNzYWdlIHRlc3Qu\" \n}"
+						},
+						"_postman_pre_request_script": "console.log('Sending large message with compression...');",
+						"_postman_test_script": "try {\n    const response = JSON.parse(pm.response.text());\n    \n    pm.test(\"Response has no errors\", function() {\n        pm.expect(response.errCode).to.eql(0);\n    });\n    \n    console.log('Large message response:', response);\n} catch (e) {\n    console.log('Error:', e);\n}"
+					}
+				}
+			]
+		},
+		{
+			"name": "Error Handling Tests",
+			"item": [
+				{
+					"name": "Missing Required Fields",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "ws://localhost:10001/?token={{token}}&sendID={{user_id}}&platformID=1&operationID=error_{{$timestamp}}",
+							"protocol": "ws",
+							"host": ["localhost"],
+							"port": "10001",
+							"query": [
+								{
+									"key": "token",
+									"value": "{{token}}"
+								},
+								{
+									"key": "sendID",
+									"value": "{{user_id}}"
+								},
+								{
+									"key": "platformID",
+									"value": "1"
+								},
+								{
+									"key": "operationID",
+									"value": "error_{{$timestamp}}"
+								}
+							]
+						},
+						"description": "Test missing required fields (should return error)",
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"reqIdentifier\": 1003\n}"
+						},
+						"_postman_pre_request_script": "console.log('Testing missing required fields...');",
+						"_postman_test_script": "try {\n    const response = JSON.parse(pm.response.text());\n    \n    pm.test(\"Response contains error\", function() {\n        pm.expect(response.errCode).to.not.eql(0);\n    });\n    \n    pm.test(\"Error message is present\", function() {\n        pm.expect(response.errMsg).to.not.be.empty;\n    });\n    \n    console.log('Error response:', response);\n} catch (e) {\n    console.log('Error:', e);\n}"
+					}
+				},
+				{
+					"name": "Invalid Message Format",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "ws://localhost:10001/?token={{token}}&sendID={{user_id}}&platformID=1&operationID=invalid_{{$timestamp}}",
+							"protocol": "ws",
+							"host": ["localhost"],
+							"port": "10001",
+							"query": [
+								{
+									"key": "token",
+									"value": "{{token}}"
+								},
+								{
+									"key": "sendID",
+									"value": "{{user_id}}"
+								},
+								{
+									"key": "platformID",
+									"value": "1"
+								},
+								{
+									"key": "operationID",
+									"value": "invalid_{{$timestamp}}"
+								}
+							]
+						},
+						"description": "Test invalid JSON format (should return error)",
+						"body": {
+							"mode": "raw",
+							"raw": "{invalid json format}"
+						},
+						"_postman_pre_request_script": "console.log('Testing invalid JSON format...');",
+						"_postman_test_script": "try {\n    const response = pm.response.text();\n    \n    pm.test(\"Response indicates error\", function() {\n        pm.expect(response).to.include('error') || pm.expect(response).to.include('Error');\n    });\n    \n    console.log('Invalid JSON response:', response);\n} catch (e) {\n    console.log('Error:', e);\n}"
+					}
+				},
+				{
+					"name": "Invalid Request Identifier",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "ws://localhost:10001/?token={{token}}&sendID={{user_id}}&platformID=1&operationID=invalid_id_{{$timestamp}}",
+							"protocol": "ws",
+							"host": ["localhost"],
+							"port": "10001",
+							"query": [
+								{
+									"key": "token",
+									"value": "{{token}}"
+								},
+								{
+									"key": "sendID",
+									"value": "{{user_id}}"
+								},
+								{
+									"key": "platformID",
+									"value": "1"
+								},
+								{
+									"key": "operationID",
+									"value": "invalid_id_{{$timestamp}}"
+								}
+							]
+						},
+						"description": "Test with invalid request identifier (should return error)",
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"reqIdentifier\": 9999,\n\t\"sendID\": \"{{user_id}}\",\n\t\"operationID\": \"op_{{$timestamp}}\",\n\t\"msgIncr\": \"msg_{{$randomInt}}\",\n\t\"data\": \"SGVsbG8=\"\n}"
+						},
+						"_postman_pre_request_script": "console.log('Testing invalid request identifier...');",
+						"_postman_test_script": "try {\n    const response = pm.response.text();\n    \n    pm.test(\"Response indicates error\", function() {\n        pm.expect(response).to.include('error') || pm.expect(response).to.include('ReqIdentifier');\n    });\n    \n    console.log('Invalid identifier response:', response);\n} catch (e) {\n    console.log('Error:', e);\n}"
+					}
+				}
+			]
+		},
+		{
+			"name": "Background Status Tests",
+			"item": [
+				{
+					"name": "Set Background True",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "ws://localhost:10001/?token={{token}}&sendID={{user_id}}&platformID=1&operationID=bg_true_{{$timestamp}}&isBackground=true",
+							"protocol": "ws",
+							"host": ["localhost"],
+							"port": "10001",
+							"query": [
+								{
+									"key": "token",
+									"value": "{{token}}"
+								},
+								{
+									"key": "sendID",
+									"value": "{{user_id}}"
+								},
+								{
+									"key": "platformID",
+									"value": "1"
+								},
+								{
+									"key": "operationID",
+									"value": "bg_true_{{$timestamp}}"
+								},
+								{
+									"key": "isBackground",
+									"value": "true"
+								}
+							]
+						},
+						"description": "Set app background status to true",
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"reqIdentifier\": 2004,\n\t\"sendID\": \"{{user_id}}\",\n\t\"operationID\": \"op_{{$timestamp}}\",\n\t\"msgIncr\": \"bg_{{$randomInt}}\",\n\t\"data\": \"eyJpc0JhY2tncm91bmQiOiB0cnVlfQ==\"\n}"
+						},
+						"_postman_pre_request_script": "console.log('Setting background status to true...');",
+						"_postman_test_script": "try {\n    const response = JSON.parse(pm.response.text());\n    \n    pm.test(\"Response has no errors\", function() {\n        pm.expect(response.errCode).to.eql(0);\n    });\n    \n    console.log('Background status response:', response);\n} catch (e) {\n    console.log('Error:', e);\n}"
+					}
+				},
+				{
+					"name": "Set Background False",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "ws://localhost:10001/?token={{token}}&sendID={{user_id}}&platformID=1&operationID=bg_false_{{$timestamp}}&isBackground=false",
+							"protocol": "ws",
+							"host": ["localhost"],
+							"port": "10001",
+							"query": [
+								{
+									"key": "token",
+									"value": "{{token}}"
+								},
+								{
+									"key": "sendID",
+									"value": "{{user_id}}"
+								},
+								{
+									"key": "platformID",
+									"value": "1"
+								},
+								{
+									"key": "operationID",
+									"value": "bg_false_{{$timestamp}}"
+								},
+								{
+									"key": "isBackground",
+									"value": "false"
+								}
+							]
+						},
+						"description": "Set app background status to false",
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"reqIdentifier\": 2004,\n\t\"sendID\": \"{{user_id}}\",\n\t\"operationID\": \"op_{{$timestamp}}\",\n\t\"msgIncr\": \"bg_{{$randomInt}}\",\n\t\"data\": \"eyJpc0JhY2tncm91bmQiOiBmYWxzZX0=\"\n}"
+						},
+						"_postman_pre_request_script": "console.log('Setting background status to false...');",
+						"_postman_test_script": "try {\n    const response = JSON.parse(pm.response.text());\n    \n    pm.test(\"Response has no errors\", function() {\n        pm.expect(response.errCode).to.eql(0);\n    });\n    \n    console.log('Background status response:', response);\n} catch (e) {\n    console.log('Error:', e);\n}"
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "ws_host",
+			"value": "localhost",
+			"type": "string"
+		},
+		{
+			"key": "ws_port",
+			"value": "10001",
+			"type": "string"
+		},
+		{
+			"key": "user_id",
+			"value": "user001",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "test_token",
+			"type": "string"
+		}
+	]
+}
