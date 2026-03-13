@@ -117,3 +117,63 @@ Finally, I would commit the fix using Git, write a clear commit message explaini
 **Explanation (Why This Prompt Is Efficient)**
 
 This prompt is efficient because it clearly specifies the framework (NestJS), architecture (controller, service, DTO), and required libraries, which helps the AI generate code that fits directly into a NestJS project. The requirements also define file validation rules and upload limits, reducing ambiguity in the generated logic. By including a placeholder for the AI tagging model, the code can be prototyped quickly without needing a real ML model immediately. This structure allows developers to rapidly test and expand the feature in a real NestJS backend.
+
+## Section 3: AI & Modern Tech Trends (20 points total)
+
+### 3.1 Database Migration Strategy
+
+If a project changes from SQL to MongoDB during development, I would first review the official MongoDB Documentation to understand key concepts like collections, documents, and schema design. I would also use AI tools such as ChatGPT to quickly compare SQL queries with MongoDB queries and generate example code. Next, I would build a small prototype to practice CRUD operations and test how the new database integrates with the backend framework. At the same time, I would communicate with the team through meetings or chat to clarify data structure changes and migration strategies. This collaboration ensures everyone understands the new database design and helps the team transition smoothly without blocking development.
+
+---
+
+## Section 4: Coding (15 points total)
+
+### 4.1 Email Domain Extraction
+
+```typescript
+function extractEmailDomain(email: string): string {
+  // Allowed characters check
+  const emailRegex = /^[A-Za-z0-9.-]+@[A-Za-z0-9.-]+$/;
+
+  // Must match allowed characters
+  if (!emailRegex.test(email)) {
+    return "Invalid";
+  }
+
+  // Must contain exactly one "@"
+  const parts = email.split("@");
+  if (parts.length !== 2) {
+    return "Invalid";
+  }
+
+  const local = parts[0];
+  const domain = parts[1];
+
+  // Local and domain must not be empty
+  if (!local || !domain) {
+    return "Invalid";
+  }
+
+  return domain;
+}
+
+console.log(extractEmailDomain("John.Smith@example.com"));
+// Output: example.com
+
+console.log(extractEmailDomain("user123@test-domain.org"));
+// Output: test-domain.org
+
+console.log(extractEmailDomain("invalid-email.com"));
+// Output: Invalid
+
+console.log(extractEmailDomain("user@@example.com"));
+// Output: Invalid
+```
+
+## Section 5: Communication (15 points total)
+
+Prompt engineering is the skill of writing clear and effective instructions for AI systems so they produce useful results. A simple analogy is ordering food at a restaurant 🍽️. If you just say “give me food,” the waiter may bring something you don’t want. But if you say “I want a grilled chicken sandwich with no onions,” you will get exactly what you need. In the same way, developers must give precise instructions (prompts) to AI tools so the output is accurate and helpful.
+
+For a non-technical stakeholder like a project manager, prompt engineering helps teams work faster and more efficiently. Developers can use AI tools to generate code, explain complex bugs, or suggest better solutions by writing well-structured prompts. In 2026, many development tools integrate AI assistants, so knowing how to communicate clearly with AI becomes an important productivity skill.
+
+It also connects to problem-solving. When developers break a problem into clear steps and describe it properly in a prompt, the AI can generate better suggestions or code. This means developers spend less time searching for solutions and more time building features, improving both speed and quality of software development.
